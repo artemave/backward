@@ -7,15 +7,15 @@ describe('Backward', function() {
       hello: 'world'
     }
     const ward = new Backward(thing)
-    ward.proxy.stuff = 2
+    ward.object.stuff = 2
 
     expect(ward.getHistory()).to.eql([
       {hello: 'world'},
       {hello: 'world', stuff: 2},
     ])
 
-    ward.proxy.stuff = 3
-    ward.proxy.foo = {
+    ward.object.stuff = 3
+    ward.object.foo = {
       bar: true
     }
 
@@ -33,7 +33,7 @@ describe('Backward', function() {
       foo: 'bar'
     }
     const ward = new Backward(thing)
-    delete ward.proxy.foo
+    delete ward.object.foo
 
     expect(ward.getHistory()).to.eql([
       {hello: 'world', foo: 'bar'},
@@ -46,7 +46,7 @@ describe('Backward', function() {
       hello: 'world'
     }
     const ward = new Backward(thing)
-    Object.defineProperty(ward.proxy, 'stuff', {value: 2, enumerable: false})
+    Object.defineProperty(ward.object, 'stuff', {value: 2, enumerable: false})
 
     expect(ward.getHistory()).to.eql([
       {hello: 'world'},
@@ -62,12 +62,26 @@ describe('Backward', function() {
     }
     const ward = new Backward(thing)
 
-    ward.proxy[stuff] = 2
+    ward.object[stuff] = 2
 
     expect(ward.getHistory()).to.eql([
       {hello: 'world'},
       {hello: 'world'},
     ])
     expect(ward.getHistory()[1][stuff]).to.eql(2)
+  })
+
+  it('sets object state', function() {
+    const thing = {
+      hello: 'world'
+    }
+    const ward = new Backward(thing)
+    ward.setObjectState({buzz: false})
+
+    expect(ward.object).to.eql({buzz: false})
+    expect(ward.getHistory()).to.eql([
+      {hello: 'world'},
+      {buzz: false},
+    ])
   })
 })

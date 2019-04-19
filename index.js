@@ -5,7 +5,7 @@ module.exports = class Backward {
     const history = [clone(object)]
     let alreadySaved = false
 
-    const handler = {
+    this.handler = {
       set(object) {
         const res = Reflect.set(...arguments)
         if (!alreadySaved) {
@@ -27,10 +27,15 @@ module.exports = class Backward {
     }
 
     this.history = history
-    this.proxy = new Proxy(object, handler)
+    this.object = new Proxy(object, this.handler)
   }
 
   getHistory() {
     return this.history
+  }
+
+  setObjectState(state) {
+    this.object = new Proxy(state, this.handler)
+    this.history.push(clone(state))
   }
 }
